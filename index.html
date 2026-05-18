@@ -100,12 +100,23 @@
         </div>
 
         <div class="chart-section">
-          <div class="chart-label">Số lần fail theo level</div>
+          <div class="chart-label">Số lần sử dụng booster theo level</div>
           <div class="chart-wrap">
             <canvas
-              id="chartFails"
+              id="chartBooster"
               role="img"
-              aria-label="Line chart — số lần fail theo level và wave"
+              aria-label="Line chart — số lần sử dụng booster theo level và wave"
+            ></canvas>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-label">Số vàng kiếm được theo level</div>
+          <div class="chart-wrap">
+            <canvas
+              id="chartGold"
+              role="img"
+              aria-label="Line chart — số vàng kiếm được theo level và wave"
             ></canvas>
           </div>
         </div>
@@ -250,14 +261,14 @@
           placeholder: "—",
         },
         {
-          key: "layers",
-          label: "Số lớp (layer)",
+          key: "booster",
+          label: "Số lần dùng booster",
           type: "number",
           placeholder: "—",
         },
         {
-          key: "fails",
-          label: "Số lần fail",
+          key: "gold",
+          label: "Số vàng kiếm được",
           type: "number",
           placeholder: "—",
         },
@@ -285,8 +296,8 @@
             colors_count: "",
             colors_used: [],
             pieces: "",
-            layers: "",
-            fails: "",
+            booster: "",
+            gold: "",
             playtime: "",
             notes: "",
           })),
@@ -516,17 +527,20 @@
 
       /* ── Summary ── */
       function refreshSummary() {
-        let totalFails = 0,
+        let totalGold = 0,
           maxColors = 0,
           totalTime = 0,
-          timeCount = 0;
+          timeCount = 0,
+          totalBooster = 0;
         state.waves.forEach((wv) => {
           wv.levels.forEach((l) => {
             const c = getNum(l.colors_count);
-            const f = getNum(l.fails);
+            const g = getNum(l.gold);
+            const b = getNum(l.booster);
             const t = getNum(l.playtime);
             if (c !== null && c > maxColors) maxColors = c;
-            if (f !== null) totalFails += f;
+            if (g !== null) totalGold += g;
+            if (b !== null) totalBooster += b;
             if (t !== null) {
               totalTime += t;
               timeCount++;
@@ -538,7 +552,7 @@
         if (!el) return;
         el.innerHTML = `
     <div class="stat"><div class="stat-label">Waves recorded</div><div class="stat-value">${state.waves.length}</div></div>
-    <div class="stat"><div class="stat-label">Total fails</div><div class="stat-value">${totalFails}</div></div>
+    <div class="stat"><div class="stat-label">Total gold earned</div><div class="stat-value">${totalGold}</div></div>
     <div class="stat"><div class="stat-label">Max colors seen</div><div class="stat-value">${maxColors || "—"}</div></div>
     <div class="stat"><div class="stat-label">Avg playtime</div><div class="stat-value">${timeCount > 0 ? Math.round(totalTime / timeCount) + "s" : "—"}</div></div>
   `;
@@ -594,7 +608,8 @@
         [
           { id: "chartColors", key: "colors_count" },
           { id: "chartPieces", key: "pieces" },
-          { id: "chartFails", key: "fails" },
+          { id: "chartBooster", key: "booster" },
+          { id: "chartGold", key: "gold" },
           { id: "chartTime", key: "playtime" },
         ].forEach(({ id, key }) => {
           if (charts[id]) charts[id].destroy();
@@ -615,8 +630,8 @@
             "Số màu",
             "Màu sử dụng",
             "Số mảnh 3D",
-            "Số lớp",
-            "Số lần fail",
+            "Số lần dùng booster",
+            "Số vàng kiếm được",
             "Thời gian (s)",
             "Ghi chú",
           ],
@@ -632,8 +647,8 @@
               l.colors_count,
               colorNames,
               l.pieces,
-              l.layers,
-              l.fails,
+              l.booster,
+              l.gold,
               l.playtime,
               '"' + (l.notes || "").replace(/"/g, '""') + '"',
             ]);
